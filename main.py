@@ -5,9 +5,9 @@ import csv
 import os
 from employee_dto import EmployeeFactory
 from client_dto import ClientFactory
-from survey_dto import ConductedSurveyFactory
+from survey_dto import ConductedSurveyFactory, SurveyFactory
 
-NUMBER_OF_RECORDS = 10
+NUMBER_OF_RECORDS : int = 10
 CHANGE_PERCENT = 0
 GENDER_PERCENT = 50
 KIDS_PERCENT = 50
@@ -46,10 +46,9 @@ if __name__ == "__main__":
     PHONE_PRECENT = args.phone
     MINIMUM_SALARY = args.min_salary
     MAXIMUM_SALARY = args.max_salary
-    print(MAXIMUM_SALARY)
     if args.type == 'employee':
         print('generating employees...')
-        employees = [EmployeeFactory.generate_employee() for i in range(NUMBER_OF_RECORDS)]
+        employees = [EmployeeFactory.generate_employee() for i in range(int(NUMBER_OF_RECORDS))]
         with open("employee_file.csv", mode="w") as employee_file:
             employee_writer = csv.writer(
                 employee_file, delimiter=",", quotechar='"', quoting=csv.QUOTE_MINIMAL
@@ -67,11 +66,11 @@ if __name__ == "__main__":
                     "salary",
                 ]
             )
-        for employee in employees:
-            employee_writer.writerow(vars(employee).values())
+            for employee in employees:
+                employee_writer.writerow(vars(employee).values())
     elif args.type == 'client':
         print('generating clients...')
-        clients = [ClientFactory.generate_client() for i in range(NUMBER_OF_RECORDS)]
+        clients = [ClientFactory.generate_client() for i in range(int(NUMBER_OF_RECORDS))]
         with open("clients_file.csv", mode="w") as clients_file:
             clients_writer = csv.writer(
                 clients_file, delimiter=",", quotechar='"', quoting=csv.QUOTE_MINIMAL
@@ -93,12 +92,49 @@ if __name__ == "__main__":
                     "is_married"
                 ]
             )
-        for client in clients:
-            clients_writer.writerow(vars(client).values())
+            for client in clients:
+                clients_writer.writerow(vars(client).values())
+    elif args.type == 'conductedsurvey':
+        print('generating conduted surveys')
+        with open("employee_file.csv", mode="r") as employee_file: 
+            csv_reader = csv.reader(employee_file, delimiter=",", quotechar='"')
+            csv_headings = next(csv_reader)
+            employees_ids = []
+            for line in csv_reader:
+                employees_ids.append(line[0])        
+        with open("clients_file.csv", mode="r") as clients_file: 
+            csv_reader = csv.reader(clients_file, delimiter=",", quotechar='"')
+            csv_headings = next(csv_reader)
+            clients_ids = []
+            for line in csv_reader:
+                clients_ids.append(line[0])
+
+                  
+        conducted_surveys = [ConductedSurveyFactory.generate_conducted_survey() for i in range(NUMBER_OF_RECORDS)]
 
     elif args.type == 'survey':
         print('generating surveys...')
-        conducted_surveys = [ConductedSurveyFactory.generate_conducted_survey() for i in range(NUMBER_OF_RECORDS)]
+
+        surveys = [SurveyFactory.generate_survey() for i in range(int(NUMBER_OF_RECORDS))]
+        with open("survey.csv", mode="w") as survey_file:
+            survey_writer = csv.writer(
+                survey_file, delimiter=",", quotechar='"', quoting=csv.QUOTE_MINIMAL
+            )
+            survey_writer.writerow(
+                [
+                    "survey_id",
+                    "survey_content",
+                    "title",
+                    "company_name",
+                    # "survey_html",
+                   
+                ]
+            )
+            for survey in surveys:
+                survey_writer.writerow(vars(survey).values())
+
+        
+        
     else:
         print('Wrong option type --help for usage')
    
