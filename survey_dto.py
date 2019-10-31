@@ -4,8 +4,9 @@ from datetime import datetime
 from faker import Faker
 from faker.providers import date_time
 import uuid
-from json_generator import write_survey, write_survey_and_answers_files
-
+from json_generator import write_survey, write_answer
+import json
+import os
 class ConductedSurveyDTO:
     def __init__(
         self,
@@ -30,24 +31,37 @@ class ConductedSurveyDTO:
 
 
 class ConductedSurveyFactory:
+    @staticmethod 
+    def get_existing_survey():
+        surveys = os.listdir('./surveys')
+        survey = random.choice(surveys)
+        survey_json = json.load(open('./surveys/' + survey))
+        number_of_answers = survey_json['number_of_questions']
+        return survey, number_of_answers
     @staticmethod
-    def generate_conducted_survey():
+    def generate_conducted_survey(employees_ids, clients_ids, completion_percentage=60):
         faker = Faker()
         id = uuid.uuid4()
-        fk_employee = None
-        fk_client = None
-        fk_survey = None
-        id_answers = None
-        datetime = None
-        email_or_phone = None
-        is_completed = None
+        fk_employee = random.choice(employees_ids)
+        fk_client = random.choice(clients_ids)
+        survey, number_of_answers = ConductedSurveyFactory.get_existing_survey()
+        fk_survey = survey        
+        date_time = str(faker.date_this_year(before_today=True, after_today=False).strftime("%m/%d/%Y"))
+        email_or_phone = randrange(0,2)
+        if completion_percentage > randrange(0,100):
+            is_completed = True
+            id_answers = uuid.uuid4()
+            write_answer(str(id_answers),save_path='./answers/',number_of_questions=number_of_answers)
+        else: 
+            is_completed = False
+            id_answers = None
         return ConductedSurveyDTO(
             id=id,
             fk_employee=fk_employee,
             fk_client=fk_client,
             fk_survey=fk_survey,
             id_answers=id_answers,
-            datetime=datetime,
+            datetime=date_time,
             email_or_phone=email_or_phone,
             is_completed=is_completed,
         )

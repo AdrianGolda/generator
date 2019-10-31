@@ -20,13 +20,13 @@ def write_survey(filename, save_path="./surveys/", number_of_questions=10):
     create_json_file(save_path + filename, survey_data)
 
 
-def write_answer(positional_str, filename, save_path="./survey/", number_of_questions=10):
+def write_answer(filename, save_path="./survey/", number_of_questions=10):
     fake = Faker()
     answer_data = return_client_answers(fake.uuid4(),
                                         filename,
                                         random.random()*MAX_DURATION,
                                         random.randint(0, number_of_questions))
-    create_json_file(save_path + positional_str + "_answer_" + filename, answer_data)
+    create_json_file(save_path + filename, answer_data)
 
 
 def create_json_file(filename, data):
@@ -54,7 +54,6 @@ def return_list_of_questions(number_of_questions):
 def return_client_answers(client_id, survey_data_filename, minutes, number_of_answers):
     return {
         "client_id": client_id,
-        "survey": survey_data_filename,
         "duration": minutes,
         "number_of_answers": number_of_answers,
         "questions": return_list_of_answers(number_of_answers)

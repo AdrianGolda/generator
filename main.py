@@ -6,6 +6,7 @@ import os
 from employee_dto import EmployeeFactory
 from client_dto import ClientFactory
 from survey_dto import ConductedSurveyFactory, SurveyFactory
+import json
 
 NUMBER_OF_RECORDS : int = 10
 CHANGE_PERCENT = 0
@@ -46,6 +47,8 @@ if __name__ == "__main__":
     PHONE_PRECENT = args.phone
     MINIMUM_SALARY = args.min_salary
     MAXIMUM_SALARY = args.max_salary
+
+    # TODO: generacja t2 + raport o zmienionych rekordach
     if args.type == 'employee':
         print('generating employees...')
         employees = [EmployeeFactory.generate_employee() for i in range(int(NUMBER_OF_RECORDS))]
@@ -108,9 +111,33 @@ if __name__ == "__main__":
             clients_ids = []
             for line in csv_reader:
                 clients_ids.append(line[0])
+        
+        
+        
 
                   
-        conducted_surveys = [ConductedSurveyFactory.generate_conducted_survey() for i in range(NUMBER_OF_RECORDS)]
+        conducted_surveys = [ConductedSurveyFactory.generate_conducted_survey(employees_ids, clients_ids) for i in range(int(NUMBER_OF_RECORDS))]
+        with open("conductedsurvey.csv", mode="w") as survey_file:
+            survey_writer = csv.writer(
+                survey_file, delimiter=",", quotechar='"', quoting=csv.QUOTE_MINIMAL
+            )
+            survey_writer.writerow(
+                [
+                    "conducted_survey_id",
+                    "employees_id",
+                    "clients_id",
+                    "survey_id",
+                    "answers",
+                    "datetime",
+                    "email_or_phone",
+                    "is_completed"
+                    # "survey_html",
+                   
+                ]
+            )
+            for survey in conducted_surveys:
+                survey_writer.writerow(vars(survey).values())
+
 
     elif args.type == 'survey':
         print('generating surveys...')
@@ -133,8 +160,7 @@ if __name__ == "__main__":
             for survey in surveys:
                 survey_writer.writerow(vars(survey).values())
 
-        
-        
+            
     else:
         print('Wrong option type --help for usage')
    
