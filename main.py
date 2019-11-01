@@ -33,7 +33,7 @@ def change_history_data(str_data_type):
             for row in reader:
                 employee_data.append(row)
             nr_of_records = len(employee_data)
-            for i in range(CHANGE_PERCENT/100 * nr_of_records):
+            for i in range(int(float(CHANGE_PERCENT) / 100.0 * float(nr_of_records))):
                 changed_employee = random.choice(employee_data)
                 value_to_change = random.choice(list(changed_employee.keys()))
                 while value_to_change not in possible_changes:
@@ -90,7 +90,7 @@ def change_history_data(str_data_type):
             for row in reader:
                 client_data.append(row)
             nr_of_records = len(client_data)
-            for i in range(CHANGE_PERCENT / 100 * nr_of_records):
+            for i in range(int(float(CHANGE_PERCENT) / 100.0 * float(nr_of_records))):
                 changed_client = random.choice(client_data)
                 value_to_change = random.choice(list(changed_client.keys()))
                 while value_to_change not in possible_changes:
