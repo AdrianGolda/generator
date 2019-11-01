@@ -21,10 +21,6 @@ MAXIMUM_SALARY = 5000
 
 
 def change_history_data(str_data_type):
-    """
-    TODO: Dodać logi
-    TODO: Dodać procentową zmianę a nie w całości
-    """
     faker = Faker()
     if str_data_type == 'employee':
         with open('employee_file.csv', newline='', mode='r') as csvfile:
