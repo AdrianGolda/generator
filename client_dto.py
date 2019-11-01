@@ -52,13 +52,13 @@ class ClientFactory:
             # first_name = random.choice(female_first_names)
             first_name = faker.first_name_female()
         last_name = faker.last_name()
-        dob = faker.date_of_birth(minimum_age=18, maximum_age=70)
+        dob = faker.date_of_birth(minimum_age=18, maximum_age=50)
         profession = faker.job()
         email = faker.email()
         phone = faker.phone_number()
         last_called = faker.date_this_year(before_today=True, after_today=False)
-        is_married = randrange(0,2)
-        has_kids = randrange(0,2)
+        is_married = randrange(0, 2)
+        has_kids = randrange(0, 2)
             
         return ClientDTO(
             id=id,
@@ -73,7 +73,4 @@ class ClientFactory:
             phone=phone,
             last_called=last_called,
             is_married=is_married
-            
-          
-            
         )

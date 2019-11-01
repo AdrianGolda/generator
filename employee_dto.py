@@ -44,7 +44,7 @@ class EmployeeFactory:
             gender = 0
             first_name = faker.first_name_female()
         last_name = faker.last_name()
-        dob = faker.date_of_birth(minimum_age=18, maximum_age=70)
+        dob = faker.date_of_birth(minimum_age=18, maximum_age=50)
         employment_date = faker.date_between(start_date=dob, end_date="today")
         dismissal_date = faker.date_between(
             start_date=employment_date, end_date="today"

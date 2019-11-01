@@ -11,7 +11,7 @@ def write_survey_and_answers_files(filename,
                                    number_of_questions=10, nr_of_completed_surveys=100):
     write_survey(filename, save_path, number_of_questions)
     for i in range(nr_of_completed_surveys):
-        write_answer(str(i), filename, save_path, number_of_questions)
+        write_answer(filename, save_path, number_of_questions)
 
 
 def write_survey(filename, save_path="./surveys/", number_of_questions=10):
@@ -20,7 +20,7 @@ def write_survey(filename, save_path="./surveys/", number_of_questions=10):
     create_json_file(save_path + filename, survey_data)
 
 
-def write_answer(filename, save_path="./survey/", number_of_questions=10):
+def write_answer(filename, save_path="./answers/", number_of_questions=10):
     fake = Faker()
     answer_data = return_client_answers(fake.uuid4(),
                                         filename,
