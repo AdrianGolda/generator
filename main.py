@@ -7,6 +7,8 @@ from employee_dto import EmployeeFactory
 from client_dto import ClientFactory
 from survey_dto import ConductedSurveyFactory, SurveyFactory
 import logging
+import pyodbc
+import os
 
 NUMBER_OF_RECORDS: int = 10
 CHANGE_PERCENT = 5
@@ -186,7 +188,7 @@ if __name__ == "__main__":
         print('generating employees...')
         if int(CHANGE_PERCENT) > 0:
             change_history_data('employee')
-        employees = [EmployeeFactory.generate_employee() for i in range(int(NUMBER_OF_RECORDS))]
+        employees = [EmployeeFactory.generate_employee(GENDER_PERCENT,DISMISSAL_RATE, MINIMUM_SALARY, MAXIMUM_SALARY) for i in range(int(NUMBER_OF_RECORDS))]
         with open("employee_file.csv", mode="a",newline="") as employee_file:
             employee_writer = csv.writer(
                 employee_file, delimiter=",", quotechar='"', quoting=csv.QUOTE_MINIMAL
@@ -211,7 +213,7 @@ if __name__ == "__main__":
         print('generating clients...')
         if int(CHANGE_PERCENT) > 0:
             change_history_data('client')
-        clients = [ClientFactory.generate_client() for i in range(int(NUMBER_OF_RECORDS))]
+        clients = [ClientFactory.generate_client(GENDER_PERCENT,KIDS_PERCENT) for i in range(int(NUMBER_OF_RECORDS))]
         with open("clients_file.csv", mode="a", newline="") as clients_file:
             clients_writer = csv.writer(
                 clients_file, delimiter=",", quotechar='"', quoting=csv.QUOTE_MINIMAL
@@ -299,7 +301,37 @@ if __name__ == "__main__":
 
 
 
+    try:
+        connection = pyodbc.connect(driver='{SQL Server}',
+                               server='DESKTOP-R4RQFGR\MSSQLSERVER02',
+                               database='datawarehouses',
+                                
+                               
 
+        )
+        # (1) Execution Example with MySQL ODBC
+        sql = """
+            BULK INSERT datawarehouses.dbo.Employee
+            FROM 'C:\\Users\\adrgo\\generator\\employee_file.csv' WITH (
+                FIELDTERMINATOR='\\t',
+                ROWTERMINATOR='\\n'
+                );
+            """
+        with connection.cursor() as cursor:
+            base = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+            fixture_path = os.path.join(base, "generator/employee_file.csv")
+            with open(fixture_path) as f:
+                try:
+                    next(f)
+                    cursor.execute(sql)
+                    # cursor.copy_from(f, "employee", sep=",")
+                    connection.commit()
+                except Exception as e:
+                    print("Error while copying to MSSQL", e)
+            print("copied")
+    except (Exception) as e:
+        print("Error while connecting to MSSQL", e)
+ 
 
     # try:
     #     connection = psycopg2.connect(

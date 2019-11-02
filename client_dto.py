@@ -39,17 +39,15 @@ class ClientDTO:
 
 class ClientFactory:
     @staticmethod
-    def generate_client():
+    def generate_client(gender_percent, kids_percent, phone_percent):
         faker = Faker()
         id = uuid.uuid4()
-        random_gender = randrange(0, 2)
-        if random_gender:
+        random_gender = randrange(0, 100)
+        if random_gender <= gender_percent:
             gender = 1
             first_name = faker.first_name_male()
-            # first_name = random.choice(male_first_names)
         else:
             gender = 0
-            # first_name = random.choice(female_first_names)
             first_name = faker.first_name_female()
         last_name = faker.last_name()
         dob = faker.date_of_birth(minimum_age=18, maximum_age=50)
@@ -58,7 +56,11 @@ class ClientFactory:
         phone = faker.phone_number()
         last_called = faker.date_this_year(before_today=True, after_today=False)
         is_married = randrange(0, 2)
-        has_kids = randrange(0, 2)
+        random_kids = randrange(0, 100)
+        if random_kids <= kids_percent:
+            has_kids = 1
+        else:
+            has_kids = 0
             
         return ClientDTO(
             id=id,

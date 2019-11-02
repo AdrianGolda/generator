@@ -33,11 +33,11 @@ class EmployeeDTO:
 
 class EmployeeFactory:
     @staticmethod
-    def generate_employee():
+    def generate_employee(gender_percent, dismissal_rate, min_salary, max_salary):
         faker = Faker()
         id = uuid.uuid4()
-        random_gender = randrange(0, 2)
-        if random_gender:
+        random_gender = randrange(0, 100)
+        if random_gender <= gender_percent:
             gender = 1
             first_name = faker.first_name_male()
         else:
@@ -46,9 +46,13 @@ class EmployeeFactory:
         last_name = faker.last_name()
         dob = faker.date_of_birth(minimum_age=18, maximum_age=50)
         employment_date = faker.date_between(start_date=dob, end_date="today")
-        dismissal_date = faker.date_between(
-            start_date=employment_date, end_date="today"
-        )
+        random_dismissal = randrange(0,100)
+        if random_dismissal <= dismissal_rate:
+            dismissal_date = faker.date_between(
+                start_date=employment_date, end_date="today"
+            )
+        else:
+            dismissal_date = None
         return EmployeeDTO(
             id=id,
             first_name=first_name,
@@ -58,5 +62,5 @@ class EmployeeFactory:
             employment_date=employment_date,
             dismissal_date=dismissal_date,
             education=random.choice(education),
-            salary=randrange(2000, 5000, 100),
+            salary=randrange(min_salary, max_salary, 100),
         )
