@@ -39,7 +39,7 @@ class ClientDTO:
 
 class ClientFactory:
     @staticmethod
-    def generate_client(gender_percent, kids_percent, phone_percent):
+    def generate_client(gender_percent, kids_percent):
         faker = Faker()
         id = uuid.uuid4()
         random_gender = randrange(0, 100)

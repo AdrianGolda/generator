@@ -47,12 +47,12 @@ class EmployeeFactory:
         dob = faker.date_of_birth(minimum_age=18, maximum_age=50)
         employment_date = faker.date_between(start_date=dob, end_date="today")
         random_dismissal = randrange(0,100)
-        if random_dismissal <= dismissal_rate:
+        if random_dismissal <= int(dismissal_rate):
             dismissal_date = faker.date_between(
                 start_date=employment_date, end_date="today"
             )
         else:
-            dismissal_date = None
+            dismissal_date = "1970-01-01"
         return EmployeeDTO(
             id=id,
             first_name=first_name,
