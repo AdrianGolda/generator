@@ -1,4 +1,5 @@
 import argparse
+import datetime
 from random_data import education
 import csv
 from faker import Faker
@@ -21,6 +22,8 @@ COMPLETED_PERCENT = 60
 PHONE_PERCENT = 80
 MINIMUM_SALARY = 2000
 MAXIMUM_SALARY = 5000
+
+
 
 
 def change_history_data(str_data_type):
@@ -198,6 +201,7 @@ if __name__ == "__main__":
                 employee_writer.writerow(
                     [
                         "employee_id",
+                        "pesel",
                         "first_name",
                         "last_name",
                         "dob",
@@ -223,6 +227,7 @@ if __name__ == "__main__":
                 clients_writer.writerow(
                     [
                         "client_id",
+                        "pesel",
                         "first_name",
                         "last_name",
                         "dob",
@@ -246,7 +251,7 @@ if __name__ == "__main__":
             employees_ids = []
             for line in csv_reader:
                 employees_ids.append(line[0])        
-        with open("clients_file.csv", mode="r") as clients_file: 
+        with open("client_file.csv", mode="r") as clients_file: 
             csv_reader = csv.reader(clients_file, delimiter=",", quotechar='"')
             csv_headings = next(csv_reader)
             clients_ids = []

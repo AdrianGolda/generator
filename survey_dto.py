@@ -7,6 +7,8 @@ import uuid
 from json_generator import write_survey, write_answer
 import json
 import os
+import csv
+from random_data import T1,T2
 class ConductedSurveyDTO:
     def __init__(
         self,
@@ -42,11 +44,39 @@ class ConductedSurveyFactory:
     def generate_conducted_survey(employees_ids, clients_ids, completion_percentage=60):
         faker = Faker()
         id = uuid.uuid4()
-        fk_employee = random.choice(employees_ids)
+        
         fk_client = random.choice(clients_ids)
         survey, number_of_answers = ConductedSurveyFactory.get_existing_survey()
-        fk_survey = survey        
-        date_time = str(faker.date_this_year(before_today=True, after_today=False).strftime("%m/%d/%Y"))
+        fk_survey = survey
+        while True:
+            try:
+                with open("./employee_file.csv", mode="r") as employee_file: 
+                    csv_reader = csv.reader(employee_file, delimiter=",", quotechar='"')
+                    chosen_row = random.choice(list(csv_reader)[1:])
+
+            except Exception as e:
+                print(e, 'no employee_file.csv') 
+                exit()
+            fk_employee = chosen_row[0]
+            employment_date = chosen_row[6]
+            dismissal_date = chosen_row[7]
+            try:        
+                start_date = max(datetime.strptime(employment_date, "%Y-%m-%d"), T1)
+                if dismissal_date != "":
+                    end_date = min(datetime.strptime(dismissal_date, "%Y-%m-%d"), T2)
+                else:
+                    end_date = T2
+                if end_date > start_date:
+                    date_time = str(faker.date_between(start_date, end_date).strftime("%m/%d/%Y"))
+                    break
+            except Exception:
+                pass
+                # else: 
+                #     continue
+            # except Exception as e:
+            #     print(e)
+            #     print(start_date, end_date)            
+            #     exit()
         email_or_phone = randrange(0,2)
         if completion_percentage > randrange(0,100):
             is_completed = True
