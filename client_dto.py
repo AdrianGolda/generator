@@ -11,6 +11,7 @@ class ClientDTO:
     def __init__(
         self,
         id,
+        pesel,
         first_name=None,
         last_name=None,
         dob=None,
@@ -24,6 +25,7 @@ class ClientDTO:
         is_married=None
     ):
         self.id = id
+        self.pesel=pesel,
         self.first_name = first_name
         self.last_name = last_name
         self.dob = dob
@@ -42,6 +44,7 @@ class ClientFactory:
     def generate_client(gender_percent, kids_percent):
         faker = Faker()
         id = uuid.uuid4()
+        pesel = str(randrange(3000000000000, 99999999999))
         random_gender = randrange(0, 100)
         if random_gender <= gender_percent:
             gender = 1
@@ -64,6 +67,7 @@ class ClientFactory:
             
         return ClientDTO(
             id=id,
+            pesel=pesel,
             first_name=first_name,
             last_name=last_name,
             gender=gender,

@@ -11,6 +11,7 @@ class EmployeeDTO:
     def __init__(
         self,
         id,
+        pesel=None,
         first_name=None,
         last_name=None,
         dob=None,
@@ -21,6 +22,7 @@ class EmployeeDTO:
         salary=None,
     ):
         self.id = id
+        self.pesel=pesel
         self.first_name = first_name
         self.last_name = last_name
         self.dob = dob
@@ -36,6 +38,7 @@ class EmployeeFactory:
     def generate_employee(gender_percent, dismissal_rate, min_salary, max_salary):
         faker = Faker()
         id = uuid.uuid4()
+        pesel = str(randrange(3000000000000, 99999999999))
         random_gender = randrange(0, 100)
         if random_gender <= gender_percent:
             gender = 1
@@ -55,6 +58,7 @@ class EmployeeFactory:
             dismissal_date = "1970-01-01"
         return EmployeeDTO(
             id=id,
+            pesel=pesel,
             first_name=first_name,
             last_name=last_name,
             gender=gender,
