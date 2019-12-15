@@ -1,4 +1,5 @@
 import argparse
+import datetime
 from random_data import education
 import csv
 from faker import Faker
@@ -7,7 +8,8 @@ from employee_dto import EmployeeFactory
 from client_dto import ClientFactory
 from survey_dto import ConductedSurveyFactory, SurveyFactory
 import logging
-import pyodbc
+# import pyodbc
+import psycopg2
 import os
 
 NUMBER_OF_RECORDS: int = 10
@@ -20,6 +22,8 @@ COMPLETED_PERCENT = 60
 PHONE_PERCENT = 80
 MINIMUM_SALARY = 2000
 MAXIMUM_SALARY = 5000
+
+
 
 
 def change_history_data(str_data_type):
@@ -85,7 +89,7 @@ def change_history_data(str_data_type):
         logging.basicConfig(filename="changes.log",
                             level=logging.INFO,
                             format="Change info: client's %(message)s")
-        with open('clients_file.csv', newline='', mode='r') as csvfile:
+        with open('client_file.csv', newline='', mode='r') as csvfile:
             possible_changes = ['first_name', 'last_name', 'gender', 'profession', 'has_kids', 'education', 'is_married']
             reader = csv.DictReader(csvfile)
             client_data = []
@@ -189,7 +193,7 @@ if __name__ == "__main__":
         if int(CHANGE_PERCENT) > 0:
             change_history_data('employee')
         employees = [EmployeeFactory.generate_employee(GENDER_PERCENT,DISMISSAL_RATE, MINIMUM_SALARY, MAXIMUM_SALARY) for i in range(int(NUMBER_OF_RECORDS))]
-        with open("employee_file.csv", mode="a",newline="") as employee_file:
+        with open("employee_file.csv", mode="a") as employee_file:
             employee_writer = csv.writer(
                 employee_file, delimiter=",", quotechar='"', quoting=csv.QUOTE_MINIMAL
             )
@@ -197,6 +201,7 @@ if __name__ == "__main__":
                 employee_writer.writerow(
                     [
                         "employee_id",
+                        "pesel",
                         "first_name",
                         "last_name",
                         "dob",
@@ -214,7 +219,7 @@ if __name__ == "__main__":
         if int(CHANGE_PERCENT) > 0:
             change_history_data('client')
         clients = [ClientFactory.generate_client(GENDER_PERCENT,KIDS_PERCENT) for i in range(int(NUMBER_OF_RECORDS))]
-        with open("clients_file.csv", mode="a", newline="") as clients_file:
+        with open("client_file.csv", mode="a", newline="") as clients_file:
             clients_writer = csv.writer(
                 clients_file, delimiter=",", quotechar='"', quoting=csv.QUOTE_MINIMAL
             )
@@ -222,6 +227,7 @@ if __name__ == "__main__":
                 clients_writer.writerow(
                     [
                         "client_id",
+                        "pesel",
                         "first_name",
                         "last_name",
                         "dob",
@@ -245,14 +251,14 @@ if __name__ == "__main__":
             employees_ids = []
             for line in csv_reader:
                 employees_ids.append(line[0])        
-        with open("clients_file.csv", mode="r") as clients_file: 
+        with open("client_file.csv", mode="r") as clients_file: 
             csv_reader = csv.reader(clients_file, delimiter=",", quotechar='"')
             csv_headings = next(csv_reader)
             clients_ids = []
             for line in csv_reader:
                 clients_ids.append(line[0])
         conducted_surveys = [ConductedSurveyFactory.generate_conducted_survey(employees_ids, clients_ids) for i in range(int(NUMBER_OF_RECORDS))]
-        with open("conductedsurvey.csv", mode="w",newline="") as survey_file:
+        with open("conductedsurvey_file.csv", mode="w",newline="") as survey_file:
             survey_writer = csv.writer(
                 survey_file, delimiter=",", quotechar='"', quoting=csv.QUOTE_MINIMAL
             )
@@ -275,7 +281,7 @@ if __name__ == "__main__":
     elif args.type == 'survey':
         print('generating surveys...')
         surveys = [SurveyFactory.generate_survey() for i in range(int(NUMBER_OF_RECORDS))]
-        with open("survey.csv", mode="w",newline="") as survey_file:
+        with open("survey_file.csv", mode="w",newline="") as survey_file:
             survey_writer = csv.writer(
                 survey_file, delimiter=",", quotechar='"', quoting=csv.QUOTE_MINIMAL
             )
@@ -301,36 +307,36 @@ if __name__ == "__main__":
 
 
 
-    try:
-        connection = pyodbc.connect(driver='{SQL Server}',
-                               server='DESKTOP-R4RQFGR\MSSQLSERVER02',
-                               database='datawarehouses',
+    # try:
+    #     connection = pyodbc.connect(driver='{SQL Server}',
+    #                            server='DESKTOP-R4RQFGR\MSSQLSERVER02',
+    #                            database='datawarehouses',
                                 
                                
 
-        )
-        # (1) Execution Example with MySQL ODBC
-        sql = """
-            BULK INSERT datawarehouses.dbo.Employee
-            FROM 'C:\\Users\\adrgo\\generator\\employee_file.csv' WITH (
-                FIELDTERMINATOR='\\t',
-                ROWTERMINATOR='\\n'
-                );
-            """
-        with connection.cursor() as cursor:
-            base = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-            fixture_path = os.path.join(base, "generator/employee_file.csv")
-            with open(fixture_path) as f:
-                try:
-                    next(f)
-                    cursor.execute(sql)
-                    # cursor.copy_from(f, "employee", sep=",")
-                    connection.commit()
-                except Exception as e:
-                    print("Error while copying to MSSQL", e)
-            print("copied")
-    except (Exception) as e:
-        print("Error while connecting to MSSQL", e)
+    #     )
+    #     # (1) Execution Example with MySQL ODBC
+    #     sql = """
+    #         BULK INSERT datawarehouses.dbo.Employee
+    #         FROM 'C:\\Users\\adrgo\\generator\\employee_file.csv' WITH (
+    #             FIELDTERMINATOR='\\t',
+    #             ROWTERMINATOR='\\n'
+    #             );
+    #         """
+    #     with connection.cursor() as cursor:
+    #         base = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    #         fixture_path = os.path.join(base, "generator/employee_file.csv")
+    #         with open(fixture_path) as f:
+    #             try:
+    #                 next(f)
+    #                 cursor.execute(sql)
+    #                 # cursor.copy_from(f, "employee", sep=",")
+    #                 connection.commit()
+    #             except Exception as e:
+    #                 print("Error while copying to MSSQL", e)
+    #         print("copied")
+    # except (Exception) as e:
+    #     print("Error while connecting to MSSQL", e)
  
 
     # try:
@@ -341,16 +347,17 @@ if __name__ == "__main__":
     #         port="5432",
     #         database="datawarehouses",
     #     )
+    #     name = args.type
     #     with connection.cursor() as cursor:
     #         base = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    #         fixture_path = os.path.join(base, "generator/employee_file.csv")
+    #         fixture_path = os.path.join(base, f"generator/{name}_file.csv")
     #         with open(fixture_path) as f:
     #             try:
     #                 next(f)
-    #                 cursor.copy_from(f, "employee", sep=",")
+    #                 cursor.copy_from(f, f"{name}", sep=",")
     #                 connection.commit()
-    #             except UniqueViolation:
-    #                 pass
+    #             except Exception as e:
+    #                 print(e)
     #         print("copied")
     # except (Exception, psycopg2.Error) as error:
     #     print("Error while connecting to PostgreSQL", error)

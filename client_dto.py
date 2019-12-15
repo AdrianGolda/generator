@@ -5,12 +5,13 @@ from datetime import datetime
 from faker import Faker
 from faker.providers import date_time
 import uuid
-
+from random_data import T1,T2
 
 class ClientDTO:
     def __init__(
         self,
         id,
+        pesel=None,
         first_name=None,
         last_name=None,
         dob=None,
@@ -24,6 +25,7 @@ class ClientDTO:
         is_married=None
     ):
         self.id = id
+        self.pesel=pesel
         self.first_name = first_name
         self.last_name = last_name
         self.dob = dob
@@ -39,9 +41,10 @@ class ClientDTO:
 
 class ClientFactory:
     @staticmethod
-    def generate_client(gender_percent, kids_percent, phone_percent):
+    def generate_client(gender_percent, kids_percent):
         faker = Faker()
         id = uuid.uuid4()
+        pesel = str(randrange(30000000000, 99999999999))
         random_gender = randrange(0, 100)
         if random_gender <= gender_percent:
             gender = 1
@@ -54,7 +57,8 @@ class ClientFactory:
         profession = faker.job()
         email = faker.email()
         phone = faker.phone_number()
-        last_called = faker.date_this_year(before_today=True, after_today=False)
+        last_called = faker.date_between(start_date=T1, end_date=T2)
+        # last_called = faker.date_this_year(before_today=True, after_today=False)
         is_married = randrange(0, 2)
         random_kids = randrange(0, 100)
         if random_kids <= kids_percent:
@@ -64,6 +68,7 @@ class ClientFactory:
             
         return ClientDTO(
             id=id,
+            pesel=pesel,
             first_name=first_name,
             last_name=last_name,
             gender=gender,
